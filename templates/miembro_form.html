@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if miembro else 'Nuevo' }} miembro · Iglesia Metodista{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Comunidad</p><h1>{{ 'Editar miembro' if miembro else 'Nuevo miembro' }}</h1></div>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('miembros') }}">Cancelar</a>
+</section>
+
+<form class="content-card form-card" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="mb-3">
+    <label class="form-label" for="nombre">Nombre completo</label>
+    <input class="form-control" id="nombre" name="nombre" maxlength="120" autocomplete="name" value="{{ miembro.nombre if miembro else '' }}" required autofocus>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="contacto">Teléfono o contacto</label>
+    <input class="form-control" id="contacto" name="contacto" maxlength="120" autocomplete="tel" value="{{ miembro.contacto if miembro else '' }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="grupo">Grupo o ministerio</label>
+    <input class="form-control" id="grupo" name="grupo" maxlength="80" list="grupos" value="{{ miembro.grupo if miembro else '' }}">
+    <datalist id="grupos"><option value="Congregación"><option value="Jóvenes"><option value="Mujeres"><option value="Hombres"><option value="Niños"><option value="Alabanza"></datalist>
+  </div>
+  <div class="mb-4">
+    <label class="form-label" for="fecha_ingreso">Fecha de ingreso</label>
+    <input class="form-control" id="fecha_ingreso" name="fecha_ingreso" type="date" value="{{ miembro.fecha_ingreso if miembro else hoy }}" required>
+  </div>
+  <button class="btn btn-primary btn-lg w-100" type="submit">{{ 'Guardar cambios' if miembro else 'Registrar miembro' }}</button>
+</form>
+{% endblock %}

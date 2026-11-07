@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Usuarios · Iglesia Metodista{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Administración</p><h1>Usuarios y roles</h1></div>
+  <a class="btn btn-primary" href="{{ url_for('nuevo_usuario') }}">＋ Nuevo usuario</a>
+</section>
+
+<section class="content-card">
+  {% if usuarios %}
+    <ul class="movement-list">
+      {% for cuenta in usuarios %}
+        <li>
+          <span class="movement-icon {{ 'positive' if cuenta.get('activo', true) else 'negative' }}">{{ cuenta.nombre[0]|upper }}</span>
+          <span class="movement-description">
+            <strong>{{ cuenta.nombre }}</strong>
+            <small>@{{ cuenta.usuario }} · {{ roles.get(cuenta.rol, cuenta.rol|capitalize) }}</small>
+            <small>{{ 'Activa' if cuenta.get('activo', true) else 'Desactivada' }}</small>
+          </span>
+          <span class="movement-actions">
+            <a class="text-link" href="{{ url_for('editar_usuario', usuario_id=cuenta._id) }}">Editar</a>
+            {% if cuenta.usuario != session.get('usuario') %}
+              <form method="post" action="{{ url_for('cambiar_estado_usuario', usuario_id=cuenta._id) }}" onsubmit="return confirm('{{ '¿Activar' if cuenta.get('activo', true) else '¿Desactivar' }} a {{ cuenta.nombre }}?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-link p-0 {{ 'text-danger' if cuenta.get('activo', true) else 'text-success' }}" type="submit">{{ 'Desactivar' if cuenta.get('activo', true) else 'Activar' }}</button>
+              </form>
+            {% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}<div class="empty-state">No hay cuentas de usuario registradas.</div>{% endif %}
+  <p class="text-secondary small mb-0 mt-3">Las cuentas desactivadas no pueden iniciar sesión; sus datos y acciones anteriores se conservan.</p>
+</section>
+{% endblock %}

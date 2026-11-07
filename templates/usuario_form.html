@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar usuario' if usuario else 'Nuevo usuario' }} · Iglesia Metodista{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Administración</p><h1>{{ 'Editar usuario' if usuario else 'Nuevo usuario' }}</h1></div>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('usuarios') }}">Cancelar</a>
+</section>
+
+<form class="content-card form-card" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="mb-3">
+    <label class="form-label" for="nombre">Nombre completo</label>
+    <input class="form-control" id="nombre" name="nombre" maxlength="120" value="{{ usuario.nombre if usuario else '' }}" required autofocus>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="usuario">Nombre de usuario</label>
+    <input class="form-control" id="usuario" name="usuario" minlength="3" maxlength="40" pattern="[A-Za-z0-9._-]+" autocomplete="username" value="{{ usuario.usuario if usuario else '' }}" required>
+    <div class="form-text">3–40 caracteres: letras sin tilde, números, punto, guion o guion bajo.</div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="rol">Rol</label>
+    <select class="form-select" id="rol" name="rol" required>
+      {% for clave, etiqueta in roles.items() %}<option value="{{ clave }}" {% if usuario and usuario.rol == clave %}selected{% elif not usuario and clave == 'secretario' %}selected{% endif %}>{{ etiqueta }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="mb-4">
+    <label class="form-label" for="contrasena">{{ 'Nueva contraseña (opcional)' if usuario else 'Contraseña' }}</label>
+    <input class="form-control" id="contrasena" name="contrasena" type="password" minlength="12" maxlength="72" autocomplete="new-password" {% if not usuario %}required{% endif %}>
+    <div class="form-text">Mínimo 12 caracteres y máximo 72 bytes UTF-8. {% if usuario %}Déjalo vacío para conservar la contraseña actual.{% endif %}</div>
+  </div>
+  <button class="btn btn-primary btn-lg w-100" type="submit">{{ 'Guardar cambios' if usuario else 'Crear usuario' }}</button>
+</form>
+{% endblock %}

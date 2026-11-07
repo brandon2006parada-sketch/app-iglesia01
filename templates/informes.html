@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Informes · Iglesia Metodista{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Análisis económico</p><h1>Informes</h1></div>
+</section>
+
+<form class="filter-bar report-filters" method="get" action="{{ url_for('informes') }}">
+  <div>
+    <label class="form-label" for="desde">Desde</label>
+    <input class="form-control" id="desde" name="desde" type="date" value="{{ desde }}" required>
+  </div>
+  <div>
+    <label class="form-label" for="hasta">Hasta</label>
+    <input class="form-control" id="hasta" name="hasta" type="date" value="{{ hasta }}" required>
+  </div>
+  <button class="btn btn-outline-secondary" type="submit">Consultar periodo</button>
+</form>
+
+<section class="summary-grid" aria-label="Resumen del periodo">
+  <article class="summary-card income-card"><span>Ingresos</span><strong>{{ resumen.ingresos|money }}</strong><small>En el periodo</small></article>
+  <article class="summary-card expense-card"><span>Gastos</span><strong>{{ resumen.gastos|money }}</strong><small>En el periodo</small></article>
+  <article class="summary-card balance-card"><span>Balance</span><strong>{{ resumen.balance|money }}</strong><small>Ingresos menos gastos</small></article>
+  <article class="summary-card members-card"><span>Movimientos</span><strong>{{ resumen.cantidad }}</strong><small>No anulados</small></article>
+</section>
+
+<div class="report-downloads">
+  <a class="btn btn-primary" href="{{ url_for('descargar_informe_excel', desde=desde, hasta=hasta) }}">Descargar Excel</a>
+  <a class="btn btn-outline-primary" href="{{ url_for('descargar_informe_pdf', desde=desde, hasta=hasta) }}">Descargar PDF</a>
+</div>
+
+<section class="content-card">
+  <div class="section-heading"><div><p class="eyebrow">Desglose</p><h2>Totales por categoría</h2></div></div>
+  {% if categorias %}
+    <div class="table-responsive"><table class="table align-middle report-table">
+      <thead><tr><th>Tipo</th><th>Categoría</th><th>Cantidad</th><th class="text-end">Total</th></tr></thead>
+      <tbody>{% for fila in categorias %}<tr><td>{{ 'Ingreso' if fila._id.tipo == 'ingreso' else 'Gasto' }}</td><td>{{ fila._id.categoria }}</td><td>{{ fila.cantidad }}</td><td class="text-end">{{ fila.total|money }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+  {% else %}<div class="empty-state">No hay movimientos para el periodo seleccionado.</div>{% endif %}
+</section>
+
+<section class="content-card">
+  <div class="section-heading"><div><p class="eyebrow">Detalle</p><h2>Movimientos</h2></div></div>
+  {% if movimientos %}
+    <div class="table-responsive"><table class="table align-middle report-table">
+      <thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Descripción</th><th class="text-end">Monto</th></tr></thead>
+      <tbody>{% for movimiento in movimientos %}<tr><td>{{ movimiento.fecha|date_es }}</td><td>{{ 'Ingreso' if movimiento.tipo == 'ingreso' else 'Gasto' }}</td><td>{{ movimiento.categoria }}</td><td>{{ movimiento.descripcion }}</td><td class="text-end">{{ movimiento.monto|money }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% if truncado %}<p class="text-secondary small mb-0">El detalle en pantalla muestra los primeros 200 movimientos; los totales contemplan todo el periodo.</p>{% endif %}
+  {% else %}<div class="empty-state">No hay movimientos para mostrar.</div>{% endif %}
+</section>
+{% endblock %}

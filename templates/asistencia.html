@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Asistencia · Iglesia Metodista{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Participación</p><h1>Asistencia</h1></div>
+  {% if puede_editar %}<a class="btn btn-primary" href="{{ url_for('nueva_asistencia') }}">＋ Registrar</a>{% endif %}
+</section>
+
+<form class="filter-bar" method="get" action="{{ url_for('asistencia') }}">
+  <label class="visually-hidden" for="mes">Mes</label>
+  <input class="form-control" id="mes" type="month" name="mes" value="{{ filtros.mes }}">
+  <label class="visually-hidden" for="tipo">Actividad</label>
+  <select class="form-select" id="tipo" name="tipo">
+    <option value="">Todas las actividades</option>
+    {% for clave, etiqueta in actividades.items() %}<option value="{{ clave }}" {% if filtros.tipo == clave %}selected{% endif %}>{{ etiqueta }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-outline-secondary" type="submit">Filtrar</button>
+  {% if filtros.mes or filtros.tipo %}<a class="btn btn-link" href="{{ url_for('asistencia') }}">Limpiar</a>{% endif %}
+</form>
+
+<section class="content-card">
+  {% if registros %}
+    <ul class="movement-list">
+      {% for registro in registros %}
+        <li>
+          <span class="movement-icon positive">{{ registro.cantidad }}</span>
+          <span class="movement-description">
+            <strong>{{ actividades.get(registro.tipo, 'Actividad') }}</strong>
+            <small>{{ registro.fecha|date_es }}{% if registro.notas %} · {{ registro.notas }}{% endif %}</small>
+          </span>
+          {% if puede_editar %}
+            <span class="movement-actions">
+              <a class="text-link" href="{{ url_for('editar_asistencia', registro_id=registro._id) }}">Editar</a>
+              <form method="post" action="{{ url_for('archivar_asistencia', registro_id=registro._id) }}" onsubmit="return confirm('¿Archivar este registro? Se conservará en el historial.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-link text-danger p-0" type="submit">Archivar</button>
+              </form>
+            </span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}<div class="empty-state">No hay registros de asistencia para esos filtros.</div>{% endif %}
+</section>
+{% endblock %}

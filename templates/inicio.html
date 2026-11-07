@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio · Iglesia Metodista{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Panel general</p><h1>Resumen de {{ periodo }}</h1></div>
+  <form method="post" action="{{ url_for('logout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-outline-secondary btn-sm" type="submit">Cerrar sesión</button>
+  </form>
+</section>
+
+<section class="summary-grid" aria-label="Resumen mensual">
+  <article class="summary-card income-card"><span>Ingresos</span><strong>{{ resumen.ingresos|money }}</strong><small>Este mes</small></article>
+  <article class="summary-card expense-card"><span>Gastos</span><strong>{{ resumen.gastos|money }}</strong><small>Este mes</small></article>
+  <article class="summary-card balance-card"><span>Balance</span><strong>{{ resumen.balance|money }}</strong><small>Este mes</small></article>
+  <article class="summary-card members-card"><span>Miembros</span><strong>{{ resumen.miembros }}</strong><small>Registrados</small></article>
+</section>
+
+<section class="content-card chart-card">
+  <div class="section-heading"><div><p class="eyebrow">Participación</p><h2>Asistencia, últimos domingos</h2></div><a class="text-link" href="{{ url_for('asistencia') }}">Ver registros</a></div>
+  <div class="chart-wrap"><canvas id="attendanceChart" aria-label="Gráfica de asistencia de los últimos domingos"></canvas></div>
+</section>
+
+<section class="content-card">
+  <div class="section-heading"><div><p class="eyebrow">Actividad reciente</p><h2>Últimos movimientos</h2></div><a class="text-link" href="{{ url_for('economia') }}">Ver todos</a></div>
+  {% if movimientos %}
+    <ul class="movement-list">
+      {% for movimiento in movimientos %}
+        <li><span class="movement-icon {{ 'positive' if movimiento.tipo == 'ingreso' else 'negative' }}">{{ '↙' if movimiento.tipo == 'ingreso' else '↗' }}</span><span class="movement-description"><strong>{{ movimiento.descripcion }}</strong><small>{{ movimiento.fecha|date_es }} · {{ movimiento.categoria }}</small></span><strong class="movement-amount {{ 'text-income' if movimiento.tipo == 'ingreso' else 'text-expense' }}">{{ '+' if movimiento.tipo == 'ingreso' else '−' }}{{ movimiento.monto|money }}</strong></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="empty-state">Todavía no hay movimientos registrados.</div>
+  {% endif %}
+</section>
+
+<div class="quick-actions">
+  <a class="btn btn-primary" href="{{ url_for('nuevo_movimiento') }}">＋ Nuevo movimiento</a>
+  <a class="btn btn-outline-primary" href="{{ url_for('informes') }}">Ver informes</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/graficas.js') }}"></script>
+<script>
+  crearGraficaAsistencia('attendanceChart', {{ asistencia.etiquetas|tojson }}, {{ asistencia.valores|tojson }});
+</script>
+{% endblock %}

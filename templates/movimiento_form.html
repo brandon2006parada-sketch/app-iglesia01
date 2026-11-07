@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if movimiento else 'Nuevo' }} movimiento · Iglesia Metodista{% endblock %}
+
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Economía</p><h1>{{ 'Editar movimiento' if movimiento else 'Nuevo movimiento' }}</h1></div><a class="btn btn-outline-secondary btn-sm" href="{{ url_for('economia') }}">Cancelar</a></section>
+
+<form class="content-card form-card" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="mb-3"><label class="form-label" for="tipo">Tipo</label><select class="form-select" id="tipo" name="tipo" required><option value="ingreso" {% if movimiento and movimiento.tipo == 'ingreso' %}selected{% endif %}>Ingreso</option><option value="gasto" {% if movimiento and movimiento.tipo == 'gasto' %}selected{% endif %}>Gasto</option></select></div>
+  <div class="mb-3"><label class="form-label" for="descripcion">Descripción</label><input class="form-control" id="descripcion" name="descripcion" maxlength="120" value="{{ movimiento.descripcion if movimiento else '' }}" required></div>
+  <div class="row g-3 mb-3"><div class="col-sm-6"><label class="form-label" for="monto">Monto</label><input class="form-control" id="monto" name="monto" type="number" min="0.01" step="0.01" value="{{ movimiento.monto if movimiento else '' }}" required></div><div class="col-sm-6"><label class="form-label" for="fecha">Fecha</label><input class="form-control" id="fecha" name="fecha" type="date" value="{{ movimiento.fecha|input_date if movimiento else hoy }}" required></div></div>
+  <div class="mb-4"><label class="form-label" for="categoria">Categoría</label><input class="form-control" id="categoria" name="categoria" maxlength="60" list="categorias" value="{{ movimiento.categoria if movimiento else '' }}" required><datalist id="categorias"><option value="Diezmos"><option value="Ofrendas"><option value="Donaciones"><option value="Servicios"><option value="Mantenimiento"><option value="Otros"></datalist></div>
+  <button class="btn btn-primary btn-lg w-100" type="submit">{{ 'Guardar cambios' if movimiento else 'Guardar movimiento' }}</button>
+</form>
+
+{% if movimiento and not movimiento.anulado %}
+<form class="content-card cancel-card" method="post" action="{{ url_for('anular_movimiento', movimiento_id=movimiento._id) }}" onsubmit="return confirm('¿Confirmas la anulación? El movimiento se conservará en el historial.');">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h2>Anular movimiento</h2><p class="text-secondary">El registro no se eliminará. Indica el motivo para dejarlo en el historial.</p>
+  <label class="form-label" for="motivo">Motivo</label><textarea class="form-control mb-3" id="motivo" name="motivo" rows="3" maxlength="300" required></textarea>
+  <button class="btn btn-outline-danger" type="submit">Anular movimiento</button>
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Miembros · Iglesia Metodista{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Comunidad</p><h1>Miembros</h1></div>
+  {% if puede_editar %}<a class="btn btn-primary" href="{{ url_for('nuevo_miembro') }}">＋ Nuevo miembro</a>{% endif %}
+</section>
+
+<form class="filter-bar" method="get" action="{{ url_for('miembros') }}">
+  <label class="visually-hidden" for="buscar-miembro">Buscar miembro</label>
+  <input class="form-control" id="buscar-miembro" name="q" type="search" maxlength="80" placeholder="Buscar nombre, grupo o contacto" value="{{ busqueda }}">
+  <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+  {% if busqueda %}<a class="btn btn-link" href="{{ url_for('miembros') }}">Limpiar</a>{% endif %}
+</form>
+
+<section class="content-card">
+  {% if miembros %}
+    <ul class="movement-list">
+      {% for miembro in miembros %}
+        <li>
+          <span class="movement-icon members-card">♡</span>
+          <span class="movement-description">
+            <strong>{{ miembro.nombre }}</strong>
+            <small>{{ miembro.grupo or 'Sin grupo' }}{% if miembro.contacto %} · {{ miembro.contacto }}{% endif %}</small>
+            {% if miembro.fecha_ingreso %}<small>Ingreso: {{ miembro.fecha_ingreso|date_es }}</small>{% endif %}
+          </span>
+          {% if puede_editar %}
+            <span class="movement-actions">
+              <a class="text-link" href="{{ url_for('editar_miembro', miembro_id=miembro._id) }}">Editar</a>
+              <form method="post" action="{{ url_for('archivar_miembro', miembro_id=miembro._id) }}" onsubmit="return confirm('¿Archivar a este miembro? Sus datos se conservarán.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-link text-danger p-0" type="submit">Archivar</button>
+              </form>
+            </span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% elif busqueda %}<div class="empty-state">No hay miembros que coincidan con “{{ busqueda }}”.</div>
+  {% else %}<div class="empty-state">Aún no hay miembros registrados.</div>{% endif %}
+  {% if not puede_editar %}<p class="text-secondary small mb-0 mt-3">Solo el secretario o el administrador pueden gestionar los miembros.</p>{% endif %}
+</section>
+{% endblock %}

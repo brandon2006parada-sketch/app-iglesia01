@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar sesión · Iglesia Metodista{% endblock %}
+
+{% block content %}
+<section class="login-wrap">
+  <div class="login-card">
+    <div class="login-emblem" aria-hidden="true">✦</div>
+    <p class="eyebrow">Jaruco</p>
+    <h1>Bienvenido</h1>
+    <p class="text-secondary mb-4">Inicia sesión para continuar</p>
+    <form method="post" action="{{ url_for('login') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <div class="mb-3 text-start">
+        <label class="form-label" for="usuario">Usuario</label>
+        <input class="form-control form-control-lg" id="usuario" name="usuario" autocomplete="username" required autofocus>
+      </div>
+      <div class="mb-4 text-start">
+        <label class="form-label" for="contrasena">Contraseña</label>
+        <input class="form-control form-control-lg" id="contrasena" name="contrasena" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn btn-primary btn-lg w-100" type="submit">Iniciar sesión</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

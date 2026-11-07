@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fa">
+  <title>{% block title %}Iglesia Metodista{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="app-header">
+    <div class="container app-header-inner">
+      <a class="brand" href="{{ url_for('inicio') }}">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span><strong>Iglesia Metodista</strong><small>Jaruco</small></span>
+      </a>
+      {% if session.get('usuario') %}
+        <div class="header-user-actions">
+          {% if session.get('rol') == 'administrador' %}<a class="admin-link" href="{{ url_for('usuarios') }}">Usuarios</a>{% endif %}
+          <div class="user-pill"><span class="user-avatar">{{ session.get('nombre', 'U')[0]|upper }}</span><span>{{ session.get('rol', '')|capitalize }}</span></div>
+        </div>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="container app-main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if session.get('usuario') %}
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <a href="{{ url_for('inicio') }}" class="{% if request.endpoint == 'inicio' %}active{% endif %}"><span aria-hidden="true">⌂</span>Inicio</a>
+      <a href="{{ url_for('economia') }}" class="{% if request.endpoint in ['economia', 'nuevo_movimiento', 'editar_movimiento'] %}active{% endif %}"><span aria-hidden="true">↗</span>Economía</a>
+      <a href="{{ url_for('miembros') }}" class="{% if request.endpoint in ['miembros', 'nuevo_miembro', 'editar_miembro'] %}active{% endif %}"><span aria-hidden="true">♡</span>Miembros</a>
+      <a href="{{ url_for('informes') }}" class="{% if request.endpoint in ['informes', 'descargar_informe_excel', 'descargar_informe_pdf'] %}active{% endif %}"><span aria-hidden="true">▤</span>Informes</a>
+    </nav>
+  {% endif %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Historial · Iglesia Metodista{% endblock %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Administración</p><h1>Historial de cambios</h1></div></section>
+<section class="content-card">
+  {% if eventos %}
+    <ul class="movement-list audit-list">
+      {% for evento in eventos %}
+        <li class="audit-event">
+          <span class="movement-icon">↻</span>
+          <div class="movement-description">
+            <strong>{{ evento.accion|replace('_', ' ')|capitalize }}</strong>
+            <small>{{ evento.usuario or 'Usuario desconocido' }} · {{ evento.fecha.strftime('%d/%m/%Y %H:%M') if evento.fecha else 'Fecha desconocida' }}{% if evento.entidad %} · {{ evento.entidad|capitalize }}{% endif %}</small>
+            {% if evento.antes or evento.despues %}
+              <details class="audit-details">
+                <summary>Ver datos del cambio</summary>
+                <div class="audit-snapshots">
+                  {% if evento.antes %}<div><strong>Antes</strong><pre>{{ evento.antes|audit_json }}</pre></div>{% endif %}
+                  {% if evento.despues %}<div><strong>Después</strong><pre>{{ evento.despues|audit_json }}</pre></div>{% endif %}
+                </div>
+              </details>
+            {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}<div class="empty-state">Todavía no hay cambios en el historial.</div>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,18 @@
+# Entornos y secretos
+venv/
+.venv/
+.venv*/
+.env
+app-iglesia-plan.pdf
+instance/
+backups/
+*.archive.gz
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Herramientas y sistema
+.vscode/
+.DS_Store
+Thumbs.db

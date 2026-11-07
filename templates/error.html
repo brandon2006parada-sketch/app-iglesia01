@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+
+{% block title %}{{ codigo }} · Iglesia Metodista{% endblock %}
+{% block content %}
+<section class="content-card empty-state"><p class="eyebrow">Error {{ codigo }}</p><h1 class="h4">{{ mensaje }}</h1><a class="btn btn-primary mt-3" href="{{ url_for('inicio') if session.get('usuario') else url_for('login') }}">Volver</a></section>
+{% endblock %}
