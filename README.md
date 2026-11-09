@@ -24,6 +24,8 @@ Aplicación web móvil primero para registrar la economía, asistencia y miembro
    python crear_admin.py
    ```
 
+   Si olvidaste el nombre o la contraseña, inicia el servicio MongoDB local y ejecuta `python recuperar_admin.py`. El asistente muestra los administradores activos y restablece la contraseña que elijas; no muestra ni almacena la contraseña en texto plano.
+
 4. Inicia la aplicación:
 
    ```powershell

@@ -1,8 +1,11 @@
 # Entornos y secretos
 venv/
+venv_clean/
 .venv/
 .venv*/
 .env
+.env.*
+!.env.example
 app-iglesia-plan.pdf
 instance/
 backups/
